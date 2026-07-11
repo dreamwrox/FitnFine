@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Field Ledger — Diet & Workout Planner</title>
+    <meta name="description" content="Daily calorie, macro and micronutrient targets with a rotating meal plan and training split." />
+
+    <!-- PWA / installability -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#15181B" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+
+    <!-- iOS "Add to Home Screen" support (no install-prompt API exists on iOS Safari) -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Field Ledger" />
+  </head>
+  <body style="margin:0; background:#15181B;">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/sw.js").catch(() => {});
+        });
+      }
+    </script>
+  </body>
+</html>

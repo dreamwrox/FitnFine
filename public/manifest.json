@@ -1,0 +1,14 @@
+{
+  "name": "Field Ledger — Diet & Workout Planner",
+  "short_name": "Field Ledger",
+  "description": "Daily calorie, macro and micronutrient targets with a rotating meal plan and training split.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#15181B",
+  "theme_color": "#15181B",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
