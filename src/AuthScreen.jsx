@@ -26,10 +26,9 @@ const inputStyle = {
 export default function AuthScreen() {
   const { signUp, signIn } = useAuth();
   const [mode, setMode] = useState("signup"); // "signup" | "signin"
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
+  const [name, setName] = useState("");
   const [city, setCity] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -37,39 +36,29 @@ export default function AuthScreen() {
     e.preventDefault();
     setError("");
 
-    const cleanUsername = username.trim().toLowerCase();
-    if (!/^[a-z0-9._-]{3,20}$/.test(cleanUsername)) {
-      return setError("Username should be 3–20 characters: letters, numbers, dots, dashes or underscores only.");
+    if (!name.trim()) {
+      return setError("Enter your name.");
     }
 
     setBusy(true);
     if (mode === "signup") {
-      if (!displayName.trim()) {
-        setBusy(false);
-        return setError("Enter a name — your admin will see this to know who's active.");
-      }
-      const { error: err } = await signUp({
-        username: cleanUsername,
-        password,
-        displayName: displayName.trim(),
-        city: city.trim(),
-      });
+      const { error: err } = await signUp({ name: name.trim(), password, city: city.trim() });
       setBusy(false);
       if (err) {
         if (/registered|exists/i.test(err.message)) {
-          return setError("That username is taken. Try another, or sign in instead.");
+          return setError("That name is already in use. Try adding a last initial or number, or sign in instead.");
         }
         return setError(err.message);
       }
       // Email confirmation is switched off in Supabase for this app, so sign-up logs the
       // user straight in — useAuth's onAuthStateChange picks up the new session and the
-      // app moves on by itself, no separate "check your email" step needed.
+      // app moves on by itself.
     } else {
-      const { error: err } = await signIn({ username: cleanUsername, password });
+      const { error: err } = await signIn({ name: name.trim(), password });
       setBusy(false);
       if (err) {
         if (/invalid login credentials/i.test(err.message)) {
-          return setError("Wrong username or password.");
+          return setError("Wrong name or password.");
         }
         return setError(err.message);
       }
@@ -88,24 +77,16 @@ export default function AuthScreen() {
 
         <div style={{ background: COLOR.panel, border: `1px solid ${COLOR.hairline}`, borderRadius: 10, padding: 20 }}>
           <form onSubmit={handleSubmit}>
+            <label style={{ fontSize: 12, color: COLOR.textDim, display: "block", marginBottom: 6 }}>Name</label>
+            <input style={inputStyle} value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+
             {mode === "signup" && (
               <>
-                <label style={{ fontSize: 12, color: COLOR.textDim, display: "block", marginBottom: 6 }}>Name</label>
-                <input style={inputStyle} value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your name" />
                 <label style={{ fontSize: 12, color: COLOR.textDim, display: "block", marginBottom: 6 }}>City (optional)</label>
                 <input style={inputStyle} value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Delhi" />
               </>
             )}
-            <label style={{ fontSize: 12, color: COLOR.textDim, display: "block", marginBottom: 6 }}>Username</label>
-            <input
-              style={inputStyle}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="e.g. jai_k"
-              autoCapitalize="none"
-              autoCorrect="off"
-              required
-            />
+
             <label style={{ fontSize: 12, color: COLOR.textDim, display: "block", marginBottom: 6 }}>Password</label>
             <input style={inputStyle} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
 

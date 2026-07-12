@@ -4,7 +4,7 @@ This is a standalone, installable web app (PWA) with real user accounts and
 an admin activity tracker, backed by Supabase. It's a normal Vite + React
 project — deploys like any other site, no Claude-specific bits.
 
-Accounts are **username + password only** — there is no email collection,
+Accounts are **name + password only** — there is no email collection,
 no email confirmation step, and nothing is ever emailed to anyone.
 
 ## 1. Create your Supabase project (free tier is fine)
@@ -37,14 +37,19 @@ git-ignored, so it never gets committed or pushed.
 
 ## 3. How accounts work (no email, anywhere)
 
-- The sign-up form asks for a **name**, an optional **city**, a **username**,
-  and a **password** — that's it.
+- The sign-up form asks for a **name**, an optional **city**, and a
+  **password** — that's it. Signing in just needs the same name and password.
 - Behind the scenes, Supabase Auth still needs a unique identifier per
-  account, so the app builds one internally as `username@users.fitnessfreek.com`.
-  This address is never displayed and never receives anything — it's purely
-  how Supabase tells accounts apart. (It has to end in a real-looking TLD
-  like `.com` — Supabase's own signup validation rejects placeholder suffixes
-  like `.local`, `.test`, or `.invalid` outright.)
+  account, so the app builds one internally from the name, e.g.
+  `jai-kumar@users.fitnessfreek.com`. This address is never displayed and
+  never receives anything — it's purely how Supabase tells accounts apart.
+  (It has to end in a real-looking TLD like `.com` — Supabase's own signup
+  validation rejects placeholder suffixes like `.local`, `.test`, or
+  `.invalid` outright.)
+- Because there's no separate username, two people signing up with the exact
+  same name will collide (Supabase requires the underlying address to be
+  unique) — the second person will see "that name is already in use." Fine
+  for a small group; worth knowing if you expect a lot of users.
 - Because email confirmation is off (step 4 above), signing up logs the user
   in immediately. No "check your inbox" step exists anywhere in the app.
 
