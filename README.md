@@ -40,9 +40,11 @@ git-ignored, so it never gets committed or pushed.
 - The sign-up form asks for a **name**, an optional **city**, a **username**,
   and a **password** — that's it.
 - Behind the scenes, Supabase Auth still needs a unique identifier per
-  account, so the app builds one internally as `username@fitnessfreek.local`.
-  This address is never displayed, never validated by mail, and never
-  receives anything — it's purely how Supabase tells accounts apart.
+  account, so the app builds one internally as `username@users.fitnessfreek.com`.
+  This address is never displayed and never receives anything — it's purely
+  how Supabase tells accounts apart. (It has to end in a real-looking TLD
+  like `.com` — Supabase's own signup validation rejects placeholder suffixes
+  like `.local`, `.test`, or `.invalid` outright.)
 - Because email confirmation is off (step 4 above), signing up logs the user
   in immediately. No "check your inbox" step exists anywhere in the app.
 
@@ -81,8 +83,8 @@ from the Supabase dashboard, not from the app itself.
   says plainly that their admin will see this. Nothing is inferred or
   scraped.
 - **No email, ever** — no real email address is asked for, stored, or
-  contacted. The internal `@fitnessfreek.local` address Supabase uses behind
-  the scenes is not a mailbox and is never shown to anyone.
+  contacted. The internal `@users.fitnessfreek.com` address Supabase uses
+  behind the scenes is not a mailbox and is never shown to anyone.
 - **No GPS location** — city is a free-text field the user fills in, not a
   device location capture.
 - **Last-active / streak** — updated automatically while the app is open, so

@@ -5,7 +5,10 @@ import { supabase } from "./supabaseClient.js";
 // or confirms a real email address, so we build a stable internal address from
 // the chosen username instead. It's never shown to the user and never
 // receives mail — it only exists so Supabase Auth can tell accounts apart.
-const INTERNAL_EMAIL_DOMAIN = "fitnessfreek.local";
+// Note: this must be a normal-looking domain (a real TLD like .com). Reserved
+// suffixes such as .local, .test, .invalid, or .example get rejected by
+// Supabase's own signup validation before the request even reaches your app.
+const INTERNAL_EMAIL_DOMAIN = "users.fitnessfreek.com";
 function usernameToInternalEmail(username) {
   return `${username}@${INTERNAL_EMAIL_DOMAIN}`;
 }
