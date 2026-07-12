@@ -697,7 +697,7 @@ function Onboarding({ initial, onSubmit }) {
     <div className="gg-body" style={{ maxWidth: 560, margin: "0 auto", padding: "32px 20px 60px" }}>
       <div style={{ marginBottom: 28 }}>
         <div className="gg-display" style={{ fontSize: 13, color: COLOR.brass, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 6 }}>
-          Field Ledger — Intake
+          Fitness Freek — Intake
         </div>
         <h1 className="gg-display" style={{ fontSize: 30, color: COLOR.text, margin: 0, fontWeight: 600 }}>
           Let's set your targets
@@ -903,7 +903,7 @@ function Dashboard({ profile, onReset, userId }) {
     <div className="gg-body" style={{ maxWidth: 720, margin: "0 auto", padding: "28px 20px 60px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
         <div>
-          <div className="gg-display" style={{ fontSize: 13, color: COLOR.brass, letterSpacing: "0.18em", textTransform: "uppercase" }}>Field Ledger</div>
+          <div className="gg-display" style={{ fontSize: 13, color: COLOR.brass, letterSpacing: "0.18em", textTransform: "uppercase" }}>Fitness Freek</div>
           <h1 className="gg-display" style={{ fontSize: 26, color: COLOR.text, margin: "2px 0 0", fontWeight: 600 }}>
             {today.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}
           </h1>
@@ -1251,7 +1251,7 @@ function InstallButton() {
 function ShareButton() {
   const [msg, setMsg] = useState("");
   const handleShare = async () => {
-    const shareData = { title: "Field Ledger", text: "My daily diet & workout planner", url: window.location.href };
+    const shareData = { title: "Fitness Freek", text: "My daily diet & workout planner", url: window.location.href };
     if (navigator.share) {
       try {
         await navigator.share(shareData);
@@ -1287,7 +1287,7 @@ function useVisitorCount() {
   const [count, setCount] = useState(null);
 
   useEffect(() => {
-    const namespace = "field-ledger-app-v1";
+    const namespace = "fitness-freek-app-v1";
     const key = "visits";
     fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`)
       .then((r) => r.json())

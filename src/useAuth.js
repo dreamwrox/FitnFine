@@ -1,6 +1,15 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "./supabaseClient.js";
 
+// Supabase Auth needs a unique identifier per account. This app never collects
+// or confirms a real email address, so we build a stable internal address from
+// the chosen username instead. It's never shown to the user and never
+// receives mail — it only exists so Supabase Auth can tell accounts apart.
+const INTERNAL_EMAIL_DOMAIN = "fitnessfreek.local";
+function usernameToInternalEmail(username) {
+  return `${username}@${INTERNAL_EMAIL_DOMAIN}`;
+}
+
 export function useAuth() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -16,17 +25,20 @@ export function useAuth() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  const signUp = useCallback(async ({ email, password, displayName, city }) => {
+  const signUp = useCallback(async ({ username, password, displayName, city }) => {
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: usernameToInternalEmail(username),
       password,
-      options: { data: { display_name: displayName, city } },
+      options: { data: { display_name: displayName, city, username } },
     });
     return { data, error };
   }, []);
 
-  const signIn = useCallback(async ({ email, password }) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const signIn = useCallback(async ({ username, password }) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: usernameToInternalEmail(username),
+      password,
+    });
     return { data, error };
   }, []);
 

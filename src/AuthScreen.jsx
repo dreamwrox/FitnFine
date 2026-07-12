@@ -26,33 +26,53 @@ const inputStyle = {
 export default function AuthScreen() {
   const { signUp, signIn } = useAuth();
   const [mode, setMode] = useState("signup"); // "signup" | "signin"
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [city, setCity] = useState("");
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setNotice("");
+
+    const cleanUsername = username.trim().toLowerCase();
+    if (!/^[a-z0-9._-]{3,20}$/.test(cleanUsername)) {
+      return setError("Username should be 3–20 characters: letters, numbers, dots, dashes or underscores only.");
+    }
+
     setBusy(true);
     if (mode === "signup") {
       if (!displayName.trim()) {
         setBusy(false);
         return setError("Enter a name — your admin will see this to know who's active.");
       }
-      const { error: err } = await signUp({ email, password, displayName: displayName.trim(), city: city.trim() });
+      const { error: err } = await signUp({
+        username: cleanUsername,
+        password,
+        displayName: displayName.trim(),
+        city: city.trim(),
+      });
       setBusy(false);
-      if (err) return setError(err.message);
-      setNotice("Check your email to confirm your account, then sign in.");
-      setMode("signin");
+      if (err) {
+        if (/registered|exists/i.test(err.message)) {
+          return setError("That username is taken. Try another, or sign in instead.");
+        }
+        return setError(err.message);
+      }
+      // Email confirmation is switched off in Supabase for this app, so sign-up logs the
+      // user straight in — useAuth's onAuthStateChange picks up the new session and the
+      // app moves on by itself, no separate "check your email" step needed.
     } else {
-      const { error: err } = await signIn({ email, password });
+      const { error: err } = await signIn({ username: cleanUsername, password });
       setBusy(false);
-      if (err) setError(err.message);
+      if (err) {
+        if (/invalid login credentials/i.test(err.message)) {
+          return setError("Wrong username or password.");
+        }
+        return setError(err.message);
+      }
     }
   };
 
@@ -60,7 +80,7 @@ export default function AuthScreen() {
     <div style={{ minHeight: "100vh", background: COLOR.ink, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
       <div style={{ maxWidth: 380, width: "100%" }}>
         <div style={{ fontSize: 13, color: COLOR.brass, textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 6 }}>
-          Field Ledger
+          Fitness Freek
         </div>
         <h1 style={{ fontSize: 24, color: COLOR.text, margin: "0 0 20px", fontWeight: 600 }}>
           {mode === "signup" ? "Create your account" : "Sign in"}
@@ -76,13 +96,20 @@ export default function AuthScreen() {
                 <input style={inputStyle} value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Delhi" />
               </>
             )}
-            <label style={{ fontSize: 12, color: COLOR.textDim, display: "block", marginBottom: 6 }}>Email</label>
-            <input style={inputStyle} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <label style={{ fontSize: 12, color: COLOR.textDim, display: "block", marginBottom: 6 }}>Username</label>
+            <input
+              style={inputStyle}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="e.g. jai_k"
+              autoCapitalize="none"
+              autoCorrect="off"
+              required
+            />
             <label style={{ fontSize: 12, color: COLOR.textDim, display: "block", marginBottom: 6 }}>Password</label>
             <input style={inputStyle} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
 
             {error && <div style={{ color: COLOR.clay, fontSize: 12, marginBottom: 12 }}>{error}</div>}
-            {notice && <div style={{ color: "#7BAE83", fontSize: 12, marginBottom: 12 }}>{notice}</div>}
 
             <button
               type="submit"
@@ -96,13 +123,14 @@ export default function AuthScreen() {
           {mode === "signup" && (
             <p style={{ fontSize: 11, color: COLOR.textDim, marginTop: 14, lineHeight: 1.6 }}>
               Your name and city (if you add one) will be visible to your programme admin, so they can see who's
-              actively using the app. This is only what you type here — we never capture your GPS location.
+              actively using the app. This is only what you type here — we never capture your GPS location, and we
+              never ask for an email address.
             </p>
           )}
 
           <button
             type="button"
-            onClick={() => { setMode(mode === "signup" ? "signin" : "signup"); setError(""); setNotice(""); }}
+            onClick={() => { setMode(mode === "signup" ? "signin" : "signup"); setError(""); }}
             style={{ width: "100%", marginTop: 14, background: "transparent", border: "none", color: COLOR.textDim, fontSize: 12, cursor: "pointer" }}
           >
             {mode === "signup" ? "Already have an account? Sign in" : "New here? Create an account"}
